@@ -1,314 +1,114 @@
 # Cursor AI Autopilot Scripts
+#### License: MIT
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
-[![Platform](https://img.shields.io/badge/Platform-Linux-blue.svg)](https://www.linux.org/)
-
-> **Automatizované skripty pro řízení Cursor AI agenta při refaktoringu a vývoji MCP Prompts projektu**
-
-Kolekce bash skriptů, které automatizují interakci s Cursor AI editorem pomocí xdotool a xclip. Umožňují hands-free vývoj s možností manuálního zásahu a zrychlení procesů.
-
-## 🎯 Účel a Motivace
-
-Tyto skripty byly vytvořeny pro automatizaci komplexního refaktoringu [MCP Prompts Server](https://github.com/sparesparrow/mcp-prompts) projektu. Místo manuálního zadávání stovek promptů do Cursor AI editoru tyto skripty:
-
-- ⚡ **Automatizují opakující se prompty** - žádné více copy-paste
-- 🔄 **Následují logickou posloupnost** - strukturovaný workflow 
-- ⏱️ **Respektují časování** - dávají AI agentovi dostatek času na práci
-- 🎛️ **Umožňují interaktivní zásah** - můžete zrychlit nebo přeskočit kroky
-- 📊 **Sledují pokrok** - vizuální indikace postupu refaktoringu
-
-## 📁 Struktura Skriptů
-
-### 🚀 `cursor-autopilot-improved.sh` - Hlavní Refaktoringový Skript
-
-**Účel**: Komplexní automatizace refaktoringu MCP Prompts na monorepo architekturu
-
-**Klíčové vlastnosti**:
-- 15 strukturovaných kroků rozdělených do 5 fází
-- Každá fáze má: **start** → **continue** → **finalize** 
-- Inteligentní časování: 5 min pro start, 3 min pro continue, 4 min pro finalize
-- Referenční TODO.mdc soubory pro přesné instrukce
-- Progress indikátor a cycle tracking
-
-**Konfigurace PROMPTS**:
-```bash
-# Strukturované prompty pro každou fázi
-declare -A PHASE_PROMPTS=(
-    ["workspace-setup-start"]="@TODO-workspace-setup.mdc implement workspace initialization..."
-    ["catalog-extraction-start"]="@TODO-catalog-extraction.mdc implement prompt catalog separation..."
-    # ... další fáze
-)
-
-# Sekvenční workflow
-declare -a WORKFLOW_SEQUENCE=(
-    "workspace-setup-start"
-    "workspace-setup-continue" 
-    "workspace-setup-finalize"
-    # ... pokračuje dalšími fázemi
-)
-```
-
-### ⚡ `cursor-quick-mode.sh` - Rychlý Iterativní Vývoj
-
-**Účel**: Rychlé iterace s krátkými intervaly pro aktivní development
-
-**Klíčové vlastnosti**:
-- 8 obecných promptů pro pokračování práce
-- Krátké 30s intervaly mezi kroky
-- 3-sekundové odpočítávání (vs. 5s u hlavního skriptu)
-- Ideální pro fine-tuning a bug fixing
-
-**Použití**:
-- Když potřebujete rychle iterovat na konkrétní problém
-- Pro testování drobných změn
-- Když je AI agent "v flow" a nepotřebuje dlouhé pauzy
-
-### 🐛 `cursor-debug-mode.sh` - Debugging a Troubleshooting
-
-**Účel**: Specializované řešení problémů, testování a opravy
-
-**Klíčové vlastnosti**:
-- Dva typy promptů: obecné debugging + file-focused kontroly
-- 2-minutové intervaly pro důkladnou analýzu
-- Zaměřuje se na TypeScript, testy, Docker, CI/CD
-- Systematická kontrola konfiguračních souborů
-
-**Debugging Workflow**:
-1. **Fáze 1**: Obecná analýza problémů (errors, tests, compilation)
-2. **Fáze 2**: Kontrola specifických souborů (`@package.json`, `@tsconfig.json`, etc.)
-
-### 🧪 `cursor-test-mode.sh` - Komprehensivní Testování
-
-**Účel**: Quality assurance a kompletní testovací workflow
-
-**Klíčové vlastnosti**:
-- Tři fáze testování: Základní → Specifické → Quality Gates
-- 1.5 minutové intervaly (rychlejší než debugging)
-- Pokrývá unit testy, integraci, E2E, security, coverage
-- Automatické postupné zpřísňování kontrol
-
-**Test Workflow**:
-1. **Základní testy**: Unit, integration, TypeScript, linting
-2. **Specifické testy**: Jest config, test scripts, Docker
-3. **Quality Gates**: Coverage, security, dokumentace
-
-## 🔧 Instalace a Příprava
-
-### Systémové Požadavky
-
-```bash
-# Ubuntu/Debian
+A collection of smart Bash scripts to automate and "autopilot" the Cursor AI code editor using xdotool, enabling hands-free development, overnight refactoring, and advanced human-AI collaboration.
+These scripts were born from the need to automate large-scale refactoring of the MCP Prompts Server project. Instead of manually typing hundreds of prompts, this toolkit lets you define intelligent workflows and let the AI agent do the heavy lifting while you sleep or focus on other tasks.
+🎯 Core Philosophy & Use Cases
+This project is built on a simple yet powerful idea: Your AI assistant shouldn't wait for you; it should work for you. By simulating user input, we achieve a platform-agnostic way to drive the AI, opening up new possibilities:
+ * 🤖 Overnight Worker: Launch a script before you go to bed and wake up to a refactored codebase, generated documentation, or a suite of new unit tests.
+ * ♿ Accessibility Boost: Provide powerful automation for developers who may have difficulty with continuous keyboard and mouse use.
+ * 🧪 Prompt Engineering Research: Systematically test how different prompt strategies and sequences ("chains") affect the AI's performance and output quality.
+ * ⚡ Parallel Workflows: While you work on a new feature, let the autopilot handle repetitive tasks like clearing tech debt or improving code style in the background.
+ * 📚 Learning by Watching: Observe how an AI agent approaches complex problems, providing a unique learning experience.
+📁 Script Arsenal
+The repository contains several "modes" tailored for different tasks, from slow-and-steady refactoring to rapid-fire debugging.
+🚀 cursor-autopilot.sh - The Marathon Runner
+The main script, designed for long, complex, multi-step tasks. It operates on a sequence of prompts defined in a workflow file.
+ * Key Features:
+   * Follows a structured workflow from a PROMPTS array.
+   * Intelligent, long delays (e.g., 5-10 minutes) to give the AI ample time for complex generation.
+   * Progress indicators and cycle tracking.
+   * Graceful interrupt handling.
+⚡ cursor-quick-fire.sh - The Sprinter
+For when you are actively developing and need the AI to perform a series of short, quick actions.
+ * Key Features:
+   * Uses a list of generic, iterative prompts ("proceed", "continue", "fix this").
+   * Very short delays (e.g., 30-60 seconds).
+   * Ideal for fine-tuning, bug fixing, or when the AI is "in the zone."
+🐛 cursor-debug-mode.sh - The Detective
+A specialized script for troubleshooting. It systematically checks different aspects of your code.
+ * Key Features:
+   * Prompts focused on finding errors, running tests, and checking configurations (@package.json, @tsconfig.json).
+   * Medium delays (e.g., 2-3 minutes) for analysis.
+   * Can be configured to focus on specific file types (TypeScript, Docker, CI).
+🔧 Installation & Setup
+Designed for Linux systems running on X11. Wayland is not supported by xdotool.
+1. System Dependencies
+# For Debian/Ubuntu
 sudo apt update
-sudo apt install xdotool xclip
+sudo apt install xdotool wmctrl xclip
 
-# Fedora/RHEL
-sudo dnf install xdotool xclip
+# For Fedora/RHEL
+sudo dnf install xdotool wmctrl xclip
 
-# Arch Linux  
-sudo pacman -S xdotool xclip
-```
+# For Arch Linux
+sudo pacman -S xdotool wmctrl xclip
 
-### Příprava Projektové Struktury
+2. Configuration
+All scripts are configured via variables at the top of the file. The most important step is to find the chat input coordinates.
+ * Open Cursor and focus the chat input field.
+ * Run this command in your terminal and move your mouse over the input field:
+   xdotool getmouselocation --shell
 
-Všechny skripty očekávají tyto TODO soubory v root projektu:
+ * Note the X and Y values and update the script variables:
+# --- User Configuration ---
+# Window identifier (use 'wmctrl -lx' to find yours)
+WINDOW_ID_QUERY="Cursor" 
 
-```
-mcp-prompts/
-├── TODO-workspace-setup.mdc
-├── TODO-catalog-extraction.mdc  
-├── TODO-contracts-creation.mdc
-├── TODO-pipeline-automation.mdc
-├── TODO-docs-update.mdc
-└── scripts/
-    ├── cursor-autopilot-improved.sh
-    ├── cursor-quick-mode.sh
-    ├── cursor-debug-mode.sh
-    └── cursor-test-mode.sh
-```
+# Coordinates for the AI chat input field
+CLICK_X=850
+CLICK_Y=1350
 
-### Spuštění Skriptů
+# Default delay between prompts (in seconds)
+DEFAULT_DELAY=300 
 
-```bash
-# Přidej execute práva
-chmod +x scripts/*.sh
+3. Creating a Prompt File
+Create a file named prompt_workflow.txt. Each line represents one prompt to be executed sequentially.
+Example prompt_workflow.txt:
+First, analyze the entire project structure and create a summary.
+@TODO-workspace-setup.mdc Implement the workspace initialization based on the markdown file.
+Refactor the database module to use the new connection pool.
+Now, write unit tests for the refactored database module.
+Verify that all tests are passing.
+Finally, generate documentation for the new module.
 
-# Spusť hlavní refaktoringový skript
-./scripts/cursor-autopilot-improved.sh
+4. Running a Script
+ * Make the scripts executable:
+   chmod +x *.sh
 
-# Rychlý vývoj
-./scripts/cursor-quick-mode.sh
+ * Open Cursor.
+ * Run the desired autopilot script from your terminal:
+   ./cursor-autopilot.sh ./prompt_workflow.txt
 
-# Debugging problémů
-./scripts/cursor-debug-mode.sh
+The script will now take over, focusing the Cursor window and executing your prompts. You can press Enter in the terminal running the script to shorten the current wait time to 5 seconds. To stop, press Ctrl+C.
+🧠 Smart Prompting Strategies (The "Lifehacks")
+The true power of this system comes from creative prompt design. Go beyond simple commands.
+ * Stateful Prompts: Create different workflow files (refactor.txt, test.txt, docs.txt) and run the autopilot against them based on your current goal.
+ * Conditional Logic (External): Wrap the script in another bash script that performs checks.
+   # pseudo-code
+if git status --porcelain | grep .; then
+  ./cursor-autopilot.sh "You have uncommitted changes. Please review them."
+fi
 
-# Testování a QA
-./scripts/cursor-test-mode.sh
-```
+ * Chain of Thought: Structure your workflow file to mimic a logical thought process, breaking down large tasks into smaller, dependent steps.
+ * Self-Correction Loops:
+   Write tests for the login feature.
+Run the tests.
+If there are any failing tests, analyze the errors and fix the code. Please describe the fix.
+Run the tests again to confirm the fix.
 
-## 🎮 Ovládání během Běhu
-
-### Základní Ovládání
-
-- **Enter**: Zkrátí aktuální čekání na 5 sekund
-- **Ctrl+C**: Ukončí skript
-- **🔊 Zvukové signály**: Systémové pípnutí před každým prompt
-
-### Interaktivní Funkce
-
-Všechny skripty podporují:
-
-```bash
-# Během čekání
-🛌 Čekám 180 s (Enter = zkrátit na 5 s)...
-⏱️  Zbývá 150 sekund...
-
-# Po stisku Enter
-↩️  Enter zachycen – zkracuji čekání na 5 s!
-⚡ Zrychleno!
-```
-
-### Vizuální Feedback
-
-```bash
-📊 Pokrok: 3/15 kroků (20%)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔄 Cyklus #1 - 14:30:22
-📋 Krok: workspace-setup-start
-💬 Prompt: @TODO-workspace-setup.mdc implement workspace initialization...
-```
-
-## 🏗️ Architektura Skriptů
-
-### Společné Komponenty
-
-Všechny skripty sdílejí tyto utility funkce:
-
-```bash
-# Bezpečné vložení přes clipboard
-paste_via_clipboard() {
-    local text="$1"
-    local old_clipboard="$(xclip -o -selection clipboard 2>/dev/null || echo '')"
-    printf '%s' "$text" | xclip -selection clipboard
-    xdotool key --clearmodifiers 'ctrl+shift+v'
-    xdotool key Return
-    sleep 0.5
-    printf '%s' "$old_clipboard" | xclip -selection clipboard
-}
-
-# Interaktivní čekání s možností zrychlení  
-wait_with_acceleration() {
-    local total_seconds=$1
-    local remaining=$total_seconds
-    while (( remaining > 0 )); do
-        if read -r -s -n 1 -t 1 key 2>/dev/null; then
-            if [[ -z "$key" ]]; then
-                echo -e "\n⚡ Enter zachycen - zkracuji čekání!"
-                remaining=5
-            fi
-        fi
-        ((remaining--))
-    done
-}
-```
-
-### Bezpečnostní Opatření
-
-- **Backup clipboard**: Automatické obnovení původního obsahu schránky
-- **Error handling**: `set -euo pipefail` pro robustní chování
-- **Dependency checking**: Kontrola xdotool a xclip před spuštěním
-- **Clear modifiers**: Vyčištění klávesových modifikátorů před akcemi
-
-## 📊 Časování a Performance
-
-### Doporučené Intervaly
-
-| Typ Operace | Interval | Důvod |
-|-------------|----------|--------|
-| **Initialization** (start) | 5 min | Složité setup operace |
-| **Implementation** (continue) | 3 min | Standardní kódování | 
-| **Finalization** | 4 min | Testování + dokumentace |
-| **Quick iterations** | 30 s | Rychlé úpravy |
-| **Debugging** | 2 min | Analýza problémů |
-| **Testing** | 1.5 min | Test execution + fixes |
-
-### Optimalizace Workflow
-
-- **Cycle pauzy**: 1-5 minut mezi cykly podle komplexity
-- **Progress tracking**: Vizuální indikátory pokroku
-- **Adaptive timing**: Různé intervaly podle typu úkolu
-- **Human override**: Možnost zrychlení kdykoliv
-
-## 🔍 Troubleshooting
-
-### Časté Problémy
-
-**Problem**: Skript nereaguje na Enter
-```bash
-# Řešení: Zkontroluj terminál focus
-xdotool getactivewindow getwindowname
-# Přepni na správný terminál před spuštěním
-```
-
-**Problem**: xdotool píše do špatného okna
-```bash
-# Řešení: Ujisti se, že Cursor má focus při spuštění
-# Případně přidej delay před první akcí
-sleep 5  # dá čas na přepnutí oken
-```
-
-**Problem**: Clipboard se neobnovuje
-```bash
-# Řešení: Zkontroluj xclip permissions
-xclip -o -selection clipboard  # test read
-echo "test" | xclip -selection clipboard  # test write
-```
-
-### Debug Režim
-
-Pro debugging přidej do skriptů:
-
-```bash
-set -x  # zapne verbose output
-# nebo
-echo "DEBUG: Sending prompt: $prompt" >&2
-```
-
-## 🤝 Přispívání
-
-### Přidání Nového Skriptu
-
-1. **Vytvoř nový .sh soubor** podle konvence `cursor-{purpose}-mode.sh`
-2. **Použij společné utility funkce** (paste_clipboard, wait_with_acceleration)
-3. **Definuj PROMPTS array** s logickou posloupností
-4. **Přidej do README** s popisem účelu a použití
-
-### Úprava Postojíčích Skriptů
-
-**Úprava promptů**:
-```bash
-# Edituj příslušný PROMPTS nebo PHASE_PROMPTS array
-declare -a QUICK_PROMPTS=(
-    "váš nový prompt zde"
-    # ... existující prompty
-)
-```
-
-**Úprava časování**:
-```bash
-# Změň delay konstanty
-QUICK_DELAY=45  # zvýšit z 30 na 45 sekund
-```
-
-## 📄 Licence
-
-MIT License - viz [LICENSE](LICENSE) soubor.
-
-## 🙏 Poděkování
-
-Vytvořeno pro automatizaci refaktoringu [MCP Prompts Server](https://github.com/sparesparrow/mcp-prompts) projektu. Inspirováno potřebou efektivní spolupráce s AI agenty při velkých refaktoringových projektech.
-
----
-
-**⚠️ Upozornění**: Tyto skripty přebírají kontrolu nad klávesnicí a myší. Spouštějte pouze v izolovaném prostředí a ujistěte se, že máte možnost přerušit provádění (Ctrl+C).
+🏗️ Script Architecture & Safety
+ * Window Focusing: Uses wmctrl and xdotool to reliably find and focus the Cursor window before each action, preventing it from typing into the wrong application.
+ * Clipboard Safety: The original clipboard content is backed up before use and restored immediately after, so you don't lose what you were working on.
+ * Robust Error Handling: Uses set -euo pipefail to exit cleanly on errors.
+ * Interactive Override: The read -t command provides a non-blocking wait that can be interrupted by the user, giving you full control to speed things up.
+🤝 How to Contribute
+Contributions are welcome! Here are some ideas:
+ * Wayland Support: Create a version of the scripts using ydotool or wtype.
+ * New Autopilot Modes: Have an idea for a specialized workflow? Create a new script (e.g., cursor-security-audit.sh).
+ * Smarter Idling: Implement a mechanism to detect if the AI is still "thinking" (e.g., by watching for CPU usage or UI changes) instead of using a fixed sleep.
+ * More Advanced Prompt Strategies: Share your most effective prompt workflows and strategies.
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for details.
+> ⚠️ Warning: These scripts take control of your mouse and keyboard. Run them with caution. Always be prepared to terminate the script with Ctrl+C in the terminal. It is recommended to run them in a controlled environment.
+> 
