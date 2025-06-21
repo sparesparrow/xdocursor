@@ -20,7 +20,7 @@ declare -a TODO_FILES=(
 # Strukturované prompty pro každou fázi (start -> iterace -> finalizace)
 declare -A PHASE_PROMPTS=(
     # Workspace Setup Phase
-    ["workspace-setup-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["workspace-setup-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md and keep this file updated"
     ["workspace-setup-continue"]="proceed"
     ["workspace-setup-finalize"]="proceed"
     
@@ -30,7 +30,7 @@ declare -A PHASE_PROMPTS=(
     ["catalog-extraction-finalize"]="proceed"
     
     # Contracts Creation Phase
-    ["contracts-creation-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["contracts-creation-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md and keep this file updated"
     ["contracts-creation-continue"]="proceed"
     ["contracts-creation-finalize"]="proceed"
     
@@ -40,7 +40,7 @@ declare -A PHASE_PROMPTS=(
     ["pipeline-automation-finalize"]="proceed"
     
     # Documentation Update Phase
-    ["docs-update-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["docs-update-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md and keep this file updated"
     ["docs-update-continue"]="proceed"
     ["docs-update-finalize"]="proceed"
 )
