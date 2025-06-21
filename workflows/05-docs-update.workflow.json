@@ -1,0 +1,37 @@
+{
+  "id": "docs-update-v1",
+  "name": "Update Project Documentation",
+  "description": "Automatically updates the project's documentation, like generating a new API reference.",
+  "variables": {
+    "docs_dir": "./docs"
+  },
+  "steps": [
+    {
+      "id": "step-1-generate-typedoc",
+      "type": "shell",
+      "description": "Generate API reference from TSDoc comments.",
+      "params": {
+        "command": "npx typedoc src/index.ts --out {{docs_dir}}/generated/api-reference"
+      }
+    },
+    {
+      "id": "step-2-commit-docs",
+      "type": "shell",
+      "description": "Commit the updated documentation to the repository.",
+      "params": {
+        "command": "git add {{docs_dir}}/generated/api-reference && git commit -m \"docs: Regenerate API reference\" || echo \"No changes to commit\""
+      }
+    },
+    {
+      "id": "step-3-notify-complete",
+      "type": "prompt",
+      "description": "Inform the user that documentation has been updated.",
+      "params": {
+        "promptId": "system-notification-prompt",
+        "variables": {
+          "message": "Documentation update is complete. API reference has been regenerated and committed."
+        }
+      }
+    }
+  ]
+}

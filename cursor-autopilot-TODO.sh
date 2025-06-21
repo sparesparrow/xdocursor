@@ -20,29 +20,29 @@ declare -a TODO_FILES=(
 # Strukturované prompty pro každou fázi (start -> iterace -> finalizace)
 declare -A PHASE_PROMPTS=(
     # Workspace Setup Phase
-    ["workspace-setup-start"]="@TODO-workspace-setup.mdc implement workspace initialization with npm workspaces and monorepo structure"
-    ["workspace-setup-continue"]="@TODO-workspace-setup.mdc proceed with next workspace setup tasks"
-    ["workspace-setup-finalize"]="@TODO-workspace-setup.mdc finalize workspace setup and verify all configurations"
+    ["workspace-setup-start"]="proceed implementation of the tasklist in @TODO.md"
+    ["workspace-setup-continue"]="proceed implementation of the tasklist in @TODO.md"
+    ["workspace-setup-finalize"]="proceed implementation of the tasklist in @TODO.md"
     
     # Catalog Extraction Phase  
-    ["catalog-extraction-start"]="@TODO-catalog-extraction.mdc implement prompt catalog separation and CLI commands"
-    ["catalog-extraction-continue"]="@TODO-catalog-extraction.mdc proceed with catalog extraction and organization"
-    ["catalog-extraction-finalize"]="@TODO-catalog-extraction.mdc finalize catalog package and test integration"
+    ["catalog-extraction-start"]="proceed implementation of the tasklist in @TODO.md"
+    ["catalog-extraction-continue"]="proceed implementation of the tasklist in @TODO.md"
+    ["catalog-extraction-finalize"]="proceed implementation of the tasklist in @TODO.md"
     
     # Contracts Creation Phase
-    ["contracts-creation-start"]="@TODO-contracts-creation.mdc implement shared contracts package with OpenAPI generation"
-    ["contracts-creation-continue"]="@TODO-contracts-creation.mdc proceed with contracts implementation and golden tests"
-    ["contracts-creation-finalize"]="@TODO-contracts-creation.mdc finalize contracts package and cross-platform validation"
+    ["contracts-creation-start"]="proceed implementation of the tasklist in @TODO.md"
+    ["contracts-creation-continue"]="proceed implementation of the tasklist in @TODO.md"
+    ["contracts-creation-finalize"]="proceed implementation of the tasklist in @TODO.md"
     
     # Pipeline Automation Phase
-    ["pipeline-automation-start"]="@TODO-pipeline-automation.mdc implement CI/CD pipeline with multi-stage Docker and automated publishing"
-    ["pipeline-automation-continue"]="@TODO-pipeline-automation.mdc proceed with pipeline automation and release workflow"
-    ["pipeline-automation-finalize"]="@TODO-pipeline-automation.mdc finalize automation pipeline and test end-to-end workflow"
+    ["pipeline-automation-start"]="proceed implementation of the tasklist in @TODO.md"
+    ["pipeline-automation-continue"]="proceed implementation of the tasklist in @TODO.md"
+    ["pipeline-automation-finalize"]="proceed implementation of the tasklist in @TODO.md"
     
     # Documentation Update Phase
-    ["docs-update-start"]="@TODO-docs-update.mdc update documentation to reflect new monorepo architecture"
-    ["docs-update-continue"]="@TODO-docs-update.mdc proceed with documentation updates and contributing guides"
-    ["docs-update-finalize"]="@TODO-docs-update.mdc finalize documentation and verify consistency with codebase"
+    ["docs-update-start"]="proceed implementation of the tasklist in @TODO.md"
+    ["docs-update-continue"]="proceed implementation of the tasklist in @TODO.md"
+    ["docs-update-finalize"]="proceed implementation of the tasklist in @TODO.md"
 )
 
 # Sekvenční workflow - každá fáze má 3 kroky

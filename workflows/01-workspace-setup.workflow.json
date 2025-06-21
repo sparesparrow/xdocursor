@@ -1,0 +1,41 @@
+{
+  "id": "workspace-setup-v1",
+  "name": "Project Workspace Setup",
+  "description": "Ensures the project is up-to-date and all dependencies are installed.",
+  "variables": {
+    "project_dir": "."
+  },
+  "steps": [
+    {
+      "id": "step-1-git-pull",
+      "type": "shell",
+      "description": "Fetch the latest changes from the remote repository.",
+      "params": {
+        "command": "git pull",
+        "cwd": "{{project_dir}}"
+      },
+      "onSuccess": "step-2-install-deps"
+    },
+    {
+      "id": "step-2-install-deps",
+      "type": "shell",
+      "description": "Install or update npm dependencies.",
+      "params": {
+        "command": "npm install",
+        "cwd": "{{project_dir}}"
+      },
+      "onSuccess": "step-3-notify-user"
+    },
+    {
+      "id": "step-3-notify-user",
+      "type": "prompt",
+      "description": "Inform the user that the setup is complete.",
+      "params": {
+        "promptId": "system-notification-prompt",
+        "variables": {
+          "message": "Workspace setup is complete. The repository is updated and all dependencies are installed."
+        }
+      }
+    }
+  ]
+}

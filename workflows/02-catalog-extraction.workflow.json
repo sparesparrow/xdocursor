@@ -1,0 +1,31 @@
+{
+  "id": "catalog-extraction-v1",
+  "name": "Extract Component Catalog",
+  "description": "Analyzes the codebase to extract a catalog of components and interfaces.",
+  "variables": {
+    "src_dir": "./src"
+  },
+  "steps": [
+    {
+      "id": "step-1-find-interfaces",
+      "type": "prompt",
+      "description": "Use an AI prompt to find all TypeScript interfaces in the source code.",
+      "params": {
+        "promptId": "mcp-resources-explorer",
+        "variables": {
+          "target_directory": "{{src_dir}}",
+          "search_pattern": "interface"
+        },
+        "output": "extracted_interfaces"
+      }
+    },
+    {
+      "id": "step-2-save-to-file",
+      "type": "shell",
+      "description": "Save the extracted list of interfaces to a markdown file.",
+      "params": {
+        "command": "echo '{{steps.step-1-find-interfaces.output.extracted_interfaces}}' > ./docs/generated/interfaces-catalog.md"
+      }
+    }
+  ]
+}

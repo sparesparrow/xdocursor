@@ -1,0 +1,97 @@
+{
+  "id": "pipeline-automation-v1",
+  "name": "CI/CD Pipeline Automation",
+  "description": "A complex workflow that lints, tests, builds, and prepares a new version of the project.",
+  "variables": {
+    "docker_image_name": "sparesparrow/mcp-prompts",
+    "project_root": "."
+  },
+  "steps": [
+    {
+      "id": "start-pipeline",
+      "type": "prompt",
+      "description": "Log the beginning of the pipeline execution.",
+      "params": {
+        "promptId": "system-notification-prompt",
+        "variables": {
+          "message": "Starting CI/CD pipeline automation workflow..."
+        }
+      },
+      "onSuccess": "lint-code"
+    },
+    {
+      "id": "lint-code",
+      "type": "shell",
+      "description": "Run the linter to check for code quality issues.",
+      "params": {
+        "command": "npm run lint",
+        "cwd": "{{project_root}}"
+      },
+      "onSuccess": "run-unit-tests",
+      "onFailure": "pipeline-failed"
+    },
+    {
+      "id": "run-unit-tests",
+      "type": "shell",
+      "description": "Execute all unit tests.",
+      "params": {
+        "command": "npm test",
+        "cwd": "{{project_root}}"
+      },
+      "output": "test_results",
+      "onSuccess": "build-project",
+      "onFailure": "pipeline-failed"
+    },
+    {
+      "id": "build-project",
+      "type": "shell",
+      "description": "Build the TypeScript project into JavaScript.",
+      "params": {
+        "command": "npm run build",
+        "cwd": "{{project_root}}"
+      },
+      "onSuccess": "get-new-version"
+    },
+    {
+      "id": "get-new-version",
+      "type": "shell",
+      "description": "Get the current version from package.json for the Docker tag.",
+      "params": {
+        "command": "node -p \"require('./package.json').version\""
+      },
+      "output": "new_version",
+      "onSuccess": "build-docker-image"
+    },
+    {
+      "id": "build-docker-image",
+      "type": "shell",
+      "description": "Build the Docker image with the new version tag.",
+      "params": {
+        "command": "docker build -t {{docker_image_name}}:{{steps.get-new-version.output.new_version}} -t {{docker_image_name}}:latest ."
+      },
+      "onSuccess": "pipeline-succeeded"
+    },
+    {
+      "id": "pipeline-succeeded",
+      "type": "prompt",
+      "description": "Notify that the pipeline has completed successfully.",
+      "params": {
+        "promptId": "system-notification-prompt",
+        "variables": {
+          "message": "CI/CD Pipeline Succeeded! New version {{steps.get-new-version.output.new_version}} is built and ready."
+        }
+      }
+    },
+    {
+      "id": "pipeline-failed",
+      "type": "prompt",
+      "description": "Notify that the pipeline has failed.",
+      "params": {
+        "promptId": "system-notification-prompt",
+        "variables": {
+          "message": "CI/CD Pipeline FAILED. Please check the logs."
+        }
+      }
+    }
+  ]
+}

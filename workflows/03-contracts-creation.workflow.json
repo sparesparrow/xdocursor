@@ -1,0 +1,31 @@
+{
+  "id": "contracts-creation-v1",
+  "name": "Create Data Contracts",
+  "description": "Generates new data contract files based on a template.",
+  "variables": {
+    "template_name": "consolidated-interfaces-template"
+  },
+  "steps": [
+    {
+      "id": "step-1-generate-code",
+      "type": "prompt",
+      "description": "Use the mcp-code-generator to create a new contract file.",
+      "params": {
+        "promptId": "mcp-code-generator",
+        "variables": {
+          "template": "{{template_name}}",
+          "output_file_name": "src/generated/NewContract.ts"
+        },
+        "output": "generation_result"
+      }
+    },
+    {
+      "id": "step-2-format-code",
+      "type": "shell",
+      "description": "Format the newly generated code using Prettier.",
+      "params": {
+        "command": "npx prettier --write src/generated/NewContract.ts"
+      }
+    }
+  ]
+}
