@@ -20,29 +20,29 @@ declare -a TODO_FILES=(
 # Strukturované prompty pro každou fázi (start -> iterace -> finalizace)
 declare -A PHASE_PROMPTS=(
     # Workspace Setup Phase
-    ["workspace-setup-start"]="proceed implementation of the tasklist in @TODO.md"
-    ["workspace-setup-continue"]="proceed implementation of the tasklist in @TODO.md"
-    ["workspace-setup-finalize"]="proceed implementation of the tasklist in @TODO.md"
+    ["workspace-setup-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["workspace-setup-continue"]="proceed"
+    ["workspace-setup-finalize"]="proceed"
     
     # Catalog Extraction Phase  
-    ["catalog-extraction-start"]="proceed implementation of the tasklist in @TODO.md"
-    ["catalog-extraction-continue"]="proceed implementation of the tasklist in @TODO.md"
-    ["catalog-extraction-finalize"]="proceed implementation of the tasklist in @TODO.md"
+    ["catalog-extraction-start"]="proceed"
+    ["catalog-extraction-continue"]="proceed"
+    ["catalog-extraction-finalize"]="proceed"
     
     # Contracts Creation Phase
-    ["contracts-creation-start"]="proceed implementation of the tasklist in @TODO.md"
-    ["contracts-creation-continue"]="proceed implementation of the tasklist in @TODO.md"
-    ["contracts-creation-finalize"]="proceed implementation of the tasklist in @TODO.md"
+    ["contracts-creation-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["contracts-creation-continue"]="proceed"
+    ["contracts-creation-finalize"]="proceed"
     
     # Pipeline Automation Phase
-    ["pipeline-automation-start"]="proceed implementation of the tasklist in @TODO.md"
-    ["pipeline-automation-continue"]="proceed implementation of the tasklist in @TODO.md"
-    ["pipeline-automation-finalize"]="proceed implementation of the tasklist in @TODO.md"
+    ["pipeline-automation-start"]="proceed"
+    ["pipeline-automation-continue"]="proceed"
+    ["pipeline-automation-finalize"]="proceed"
     
     # Documentation Update Phase
-    ["docs-update-start"]="proceed implementation of the tasklist in @TODO.md"
-    ["docs-update-continue"]="proceed implementation of the tasklist in @TODO.md"
-    ["docs-update-finalize"]="proceed implementation of the tasklist in @TODO.md"
+    ["docs-update-start"]="proceed implementation of the tasklist in @TODO.md and regularly commit changes to github and close github issues with explanation if you fix any of them. do not forget to rerun tests to see if tests were not broken by your changes or need an update. when unsure, use @Web for finding the best practices and approaches to decide or move on when you are stuck on something. when a breaking change is implemented, tested and documented, publish all packages, docker images and a new release. now proceed with whatever you are currently working on or continue with the next TODO in @TODO.md"
+    ["docs-update-continue"]="proceed"
+    ["docs-update-finalize"]="proceed"
 )
 
 # Sekvenční workflow - každá fáze má 3 kroky

@@ -1,30 +1,19 @@
 #!/usr/bin/env bash
 # =======================================================================================
-# xdocursor Autopilot v2.0 - MCP Workflow Engine Orchestrator
+# xdocursor Autopilot v2.1 - MCP Workflow Engine Orchestrator
 #
 # Autor: Sparrow AI Tech
+# Verze: 2.1
 # Popis:
-#   Tato nová verze skriptu zásadně mění přístup k automatizaci v editoru Cursor.
-#   Opouští křehkou a nespolehlivou metodu simulace GUI (pomocí xdotool a xclip)
-#   a přechází na robustní, na protokolu založený model.
+#   Opravená a robustnější verze skriptu pro orchestraci `mcp-prompts` workflow.
 #
-#   Využívá sílu Model Context Protocol (MCP) a workflow enginu z projektu
-#   `sparesparrow/mcp-prompts` k provádění komplexních, stavových a spolehlivých
-#   automatizačních procesů.
-#
-# Princip fungování:
-#   1. WORKFLOW DEFINICE: Jednotlivé refaktoringové fáze jsou definovány ve
-#      formátu JSON (`.workflow.json` soubory). To umožňuje verzování, snadnou
-#      úpravu a sdílení komplexních workflow.
-#   2. WORKFLOW ENGINE: Skript již neobsahuje logiku pro provádění kroků. Místo
-#      toho volá specializovaný CLI nástroj (`workflow-cli.ts` z `mcp-prompts`),
-#      který je zodpovědný za parsování a provádění workflow.
-#   3. ROBUSTNOST: Odstraněním závislosti na `xdotool` a `sleep` získáváme systém
-#      s uzavřenou smyčkou. Každý krok je proveden a jeho výsledek je znám před
-#      spuštěním dalšího kroku. To eliminuje chyby časování a závislost na UI.
-#   4. ROZŠIŘITELNOST: JSON workflow může obsahovat kroky typu "shell", "http"
-#      nebo "prompt", což umožňuje orchestraci nejen AI, ale i externích nástrojů
-#      a API.
+# Změny ve v2.1:
+#   - FIX: Opraveno okamžité ukončování skriptu při chybě v podprocesu (subshell)
+#     v kombinaci s `set -e`. Nyní se chyba správně zachytí a zaloguje.
+#   - FEATURE: Přidán globální error handler (pomocí `trap`) pro odchycení
+#     jakékoli neočekávané chyby. Vypíše přesné místo a příkaz, který selhal,
+#     což zásadně usnadňuje budoucí ladění.
+#   - REFACTOR: Zjednodušena logika v `run_workflow` pro zachytávání chyb.
 #
 # =======================================================================================
 
@@ -33,15 +22,13 @@ set -euo pipefail
 # ----- KONFIGURACE ---------------------------------------------------------------------
 
 # Cesta k projektu mcp-prompts, který obsahuje workflow engine.
-# Upravte podle umístění na vašem systému.
-MCP_PROMPTS_DIR="${HOME}/mcp/mcp-prompts"
+# DŮLEŽITÉ: Upravte podle umístění na vašem systému.
+MCP_PROMPTS_DIR="${HOME}/mcp/mcp-prompts" # Příklad cesty
 
 # Adresář obsahující definice workflow.
-# Každý soubor .workflow.json reprezentuje jednu ucelenou fázi refaktoringu.
 WORKFLOWS_DIR="./workflows"
 
 # Sekvence, ve které se mají workflow spouštět.
-# Názvy odpovídají souborům v adresáři WORKFLOWS_DIR.
 declare -a WORKFLOW_SEQUENCE=(
     "01-workspace-setup.workflow.json"
     "02-catalog-extraction.workflow.json"
@@ -56,13 +43,25 @@ declare -a WORKFLOW_SEQUENCE=(
 log() {
     local level="$1"
     local message="$2"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] - $message"
+    # Používáme >&2 pro logování na standardní chybový výstup, což je best practice.
+    echo >&2 "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] - $message"
 }
+
+# Globální error handler. Spustí se automaticky při jakékoli chybě díky `trap`.
+error_handler() {
+  local exit_code=$?
+  local line_number=$1
+  local command=$2
+  log "FATAL" "Skript selhal na řádku ${line_number} při provádění příkazu: '${command}' (exit kód: ${exit_code})"
+}
+
+# Nastavení "pasti" na ERR signál, která zavolá naši funkci pro ošetření chyb.
+trap 'error_handler ${LINENO} "$BASH_COMMAND"' ERR
 
 # Zobrazí úvodní hlavičku skriptu
 print_header() {
     echo "================================================="
-    log "INFO" "xdocursor Autopilot v2.0 - MCP Workflow Engine"
+    log "INFO" "xdocursor Autopilot v2.1 - MCP Workflow Engine"
     echo "================================================="
     echo "🚀 Spouštím robustní automatizaci řízenou workflow enginem."
     echo "🛑 Pro ukončení stiskněte Ctrl+C."
@@ -95,10 +94,10 @@ check_dependencies() {
 }
 
 # Spustí konkrétní workflow pomocí CLI nástroje z mcp-prompts.
-# Nahrazuje původní křehkou logiku `paste_via_clipboard` a `sleep`.
 run_workflow() {
     local workflow_file="$1"
-    local full_path_to_workflow="${WORKFLOWS_DIR}/${workflow_file}"
+    local full_path_to_workflow
+    full_path_to_workflow=$(realpath "${WORKFLOWS_DIR}/${workflow_file}")
 
     if [ ! -f "$full_path_to_workflow" ]; then
         log "WARN" "Workflow soubor '$workflow_file' byl přeskočen, protože nebyl nalezen."
@@ -108,20 +107,25 @@ run_workflow() {
     log "INFO" "Spouštím workflow: $workflow_file"
     echo "-------------------------------------------------"
 
-    # Zde je klíčová změna: místo simulace UI voláme přímo CLI nástroj,
-    # který provede celé workflow. Je to stabilní, rychlé a spolehlivé.
-    # Používáme `ts-node` pro přímé spuštění TypeScript souboru.
+    local exit_code=0
+    # KLÍČOVÁ OPRAVA:
+    # Subshell `(...)` je nyní součástí `||` podmínky.
+    # To znamená, že pokud subshell selže, provede se příkaz napravo od `||`,
+    # což "zpracuje" chybu a zabrání `set -e`, aby ukončilo celý skript.
     (
-        cd "$MCP_PROMPTS_DIR" || exit
+        # Měníme adresář v rámci subshellu, což neovlivní hlavní skript.
+        cd "$MCP_PROMPTS_DIR" || exit 1
+        # Pro spolehlivost spouštíme workflow CLI s absolutní cestou k souboru.
         npx ts-node src/scripts/workflow-cli.ts --workflow "$full_path_to_workflow"
-    )
+    ) || exit_code=$?
 
-    local exit_code=$?
     if [ $exit_code -eq 0 ]; then
         log "SUCCESS" "Workflow '$workflow_file' bylo úspěšně dokončeno."
     else
+        # Nyní se tato chybová hláška skutečně zobrazí.
         log "ERROR" "Workflow '$workflow_file' selhalo s chybovým kódem $exit_code."
-        # Zde můžete přidat logiku pro zastavení celého procesu při chybě
+        # Můžete se rozhodnout, zda zde skript ukončit, nebo pokračovat dalším workflow.
+        # Prozatím necháváme pokračovat. Odkomentujte pro zastavení při chybě.
         # exit 1
     fi
     echo "-------------------------------------------------"
@@ -141,10 +145,9 @@ main() {
 
         for workflow_name in "${WORKFLOW_SEQUENCE[@]}"; do
             ((current_step++))
-            log "INFO" "Zpracovávám krok $current_step/$total_steps"
+            log "INFO" "Zpracovávám krok $current_step/$total_steps: $workflow_name"
             run_workflow "$workflow_name"
 
-            # Krátká pauza mezi workflow pro přehlednost logů
             if [ "$current_step" -lt "$total_steps" ]; then
                  log "INFO" "Pauza 10 sekund před dalším workflow..."
                  sleep 10
